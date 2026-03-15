@@ -3,7 +3,7 @@ BUNDLE = $(APP_NAME).app
 INSTALL_DIR = /Applications/$(BUNDLE)
 BUILD_DIR = .build/release
 
-.PHONY: build install clean
+.PHONY: build install clean dist
 
 build:
 	@test -f Sources/Config.swift || cp Sources/Config.def.swift Sources/Config.swift
@@ -20,9 +20,18 @@ install: build
 	cp $(BUILD_DIR)/$(APP_NAME) $(INSTALL_DIR)/Contents/MacOS/
 	@echo "Updated $(INSTALL_DIR)"
 
+dist: build
+	rm -rf $(BUNDLE)
+	mkdir -p $(BUNDLE)/Contents/MacOS
+	cp Info.plist $(BUNDLE)/Contents/
+	cp $(BUILD_DIR)/$(APP_NAME) $(BUNDLE)/Contents/MacOS/
+	codesign --force --sign - $(BUNDLE)
+	zip -r $(APP_NAME).zip $(BUNDLE)
+	@shasum -a 256 $(APP_NAME).zip
+
 clean:
 	swift package clean
-	rm -rf $(BUNDLE)
+	rm -rf $(BUNDLE) $(APP_NAME).zip
 
 uninstall:
 	rm -rf $(INSTALL_DIR)

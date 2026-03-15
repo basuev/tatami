@@ -1,6 +1,7 @@
 .build/
 Sources/Config.swift
 tatami.app/
+*.zip
 .DS_Store
 CLAUDE.md
 AGENTS.md
