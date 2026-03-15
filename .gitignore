@@ -1,0 +1,5 @@
+.build/
+mmwm.app/
+.DS_Store
+CLAUDE.md
+AGENTS.md
