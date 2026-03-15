@@ -1,4 +1,5 @@
 .build/
+Sources/Config.swift
 tatami.app/
 .DS_Store
 mmwm.app/
