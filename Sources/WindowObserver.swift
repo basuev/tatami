@@ -4,6 +4,9 @@ import ApplicationServices
 final class WindowObserver {
     static let shared = WindowObserver()
 
+    private static let maxRetries = 10
+    private static let retryInterval: TimeInterval = 0.05
+
     private var observers: [pid_t: AXObserver] = [:]
 
     private init() {}
@@ -50,8 +53,8 @@ final class WindowObserver {
         guard AXUIElementCopyAttributeValue(appRef, kAXWindowsAttribute as CFString, &windowsValue) == .success,
               let windows = windowsValue as? [AXUIElement]
         else {
-            if attempt < 10 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            if attempt < Self.maxRetries {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Self.retryInterval) {
                     self.tryAdoptWindows(pid: pid, attempt: attempt + 1)
                 }
             }
@@ -66,8 +69,8 @@ final class WindowObserver {
             added = true
         }
 
-        if !added && attempt < 10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        if !added && attempt < Self.maxRetries {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.retryInterval) {
                 self.tryAdoptWindows(pid: pid, attempt: attempt + 1)
             }
         }
@@ -101,8 +104,8 @@ final class WindowObserver {
         let tw = TrackedWindow(element: element, pid: pid)
         if tw.isTileable() {
             WorkspaceManager.shared.addWindow(tw)
-        } else if attempt < 10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        } else if attempt < Self.maxRetries {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.retryInterval) {
                 self.tryAdoptWindow(element: element, pid: pid, attempt: attempt + 1)
             }
         }
