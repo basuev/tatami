@@ -1,9 +1,23 @@
 import Foundation
 
+enum Layout {
+    case tile
+    case monocle
+}
+
 enum Tiler {
-    static func tile(windows: [TrackedWindow], screen: CGRect) {
+    static func tile(windows: [TrackedWindow], screen: CGRect, layout: Layout) {
         guard !windows.isEmpty else { return }
 
+        switch layout {
+        case .tile:
+            tileLayout(windows: windows, screen: screen)
+        case .monocle:
+            monocleLayout(windows: windows, screen: screen)
+        }
+    }
+
+    private static func tileLayout(windows: [TrackedWindow], screen: CGRect) {
         if windows.count == 1 {
             windows[0].setFrame(screen)
             return
@@ -34,6 +48,12 @@ enum Tiler {
                 height: h
             )
             windows[i].setFrame(rect)
+        }
+    }
+
+    private static func monocleLayout(windows: [TrackedWindow], screen: CGRect) {
+        for window in windows {
+            window.setFrame(screen)
         }
     }
 }

@@ -28,6 +28,12 @@ final class StatusBar: NSObject {
         let font = NSFont.menuBarFont(ofSize: 0)
         let fontSize = font.pointSize
 
+        let layout = ws.layouts[ws.active]
+        if layout == .monocle {
+            let windowCount = ws.workspaces[ws.active].count
+            views.append(LayoutIndicatorView(text: "M\(windowCount)", fontSize: fontSize))
+        }
+
         for i in 0..<Config.workspaceCount {
             let isActive = i == ws.active
             let hasWindows = !ws.workspaces[i].isEmpty
@@ -62,6 +68,17 @@ final class StatusBar: NSObject {
 
 private let badgeColor = NSColor(red: 26/255, green: 34/255, blue: 37/255, alpha: 1)
 
+private func drawCenteredText(_ text: String, in bounds: NSRect, fontSize: CGFloat, color: NSColor, ctx: CGContext) {
+    let font = NSFont.systemFont(ofSize: fontSize - 1)
+    let str = NSAttributedString(string: text, attributes: [.font: font, .foregroundColor: color])
+    let line = CTLineCreateWithAttributedString(str)
+    let lineBounds = CTLineGetBoundsWithOptions(line, .useOpticalBounds)
+    let textX = bounds.midX - lineBounds.width / 2 - lineBounds.origin.x
+    let textY = bounds.midY - font.capHeight / 2
+    ctx.textPosition = CGPoint(x: textX, y: textY)
+    CTLineDraw(line, ctx)
+}
+
 private final class BadgeView: NSView {
     private let number: Int
     private let fontSize: CGFloat
@@ -84,15 +101,6 @@ private final class BadgeView: NSView {
         guard let ctx = NSGraphicsContext.current?.cgContext else { return }
         let rect = bounds.insetBy(dx: 0.5, dy: 0.5)
         let path = CGPath(roundedRect: rect, cornerWidth: 3, cornerHeight: 3, transform: nil)
-        let font = NSFont.systemFont(ofSize: fontSize - 1)
-        let str = NSAttributedString(
-            string: "\(number)",
-            attributes: [.font: font, .foregroundColor: NSColor.black]
-        )
-        let line = CTLineCreateWithAttributedString(str)
-        let lineBounds = CTLineGetBoundsWithOptions(line, .useOpticalBounds)
-        let textX = bounds.midX - lineBounds.width / 2 - lineBounds.origin.x
-        let textY = bounds.midY - font.capHeight / 2
 
         if active {
             ctx.addPath(path)
@@ -107,7 +115,30 @@ private final class BadgeView: NSView {
             ctx.setFillColor(badgeColor.cgColor)
         }
 
-        ctx.textPosition = CGPoint(x: textX, y: textY)
-        CTLineDraw(line, ctx)
+        drawCenteredText("\(number)", in: bounds, fontSize: fontSize, color: .black, ctx: ctx)
+    }
+}
+
+private final class LayoutIndicatorView: NSView {
+    private let text: String
+    private let fontSize: CGFloat
+
+    init(text: String, fontSize: CGFloat) {
+        self.text = text
+        self.fontSize = fontSize
+        super.init(frame: .zero)
+        let font = NSFont.systemFont(ofSize: fontSize - 1)
+        let str = NSAttributedString(string: text, attributes: [.font: font])
+        let textWidth = str.size().width
+        widthAnchor.constraint(equalToConstant: textWidth + 6).isActive = true
+        heightAnchor.constraint(equalToConstant: fontSize + 6).isActive = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard let ctx = NSGraphicsContext.current?.cgContext else { return }
+        drawCenteredText(text, in: bounds, fontSize: fontSize, color: badgeColor, ctx: ctx)
     }
 }

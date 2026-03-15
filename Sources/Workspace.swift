@@ -4,6 +4,7 @@ final class WorkspaceManager {
     static let shared = WorkspaceManager()
 
     private(set) var workspaces: [[TrackedWindow]] = Array(repeating: [], count: Config.workspaceCount)
+    private(set) var layouts: [Layout] = Array(repeating: .tile, count: Config.workspaceCount)
     private(set) var active: Int = 0
 
     private init() {}
@@ -92,7 +93,11 @@ final class WorkspaceManager {
               let focused = WindowManager.focusedWindow(),
               let i = windows.firstIndex(of: focused)
         else { return }
-        windows[(i + offset + windows.count) % windows.count].focus()
+        let target = windows[(i + offset + windows.count) % windows.count]
+        target.focus()
+        if layouts[active] == .monocle {
+            target.raise()
+        }
     }
 
     func swapMaster() {
@@ -102,16 +107,25 @@ final class WorkspaceManager {
               i != 0
         else { return }
         workspaces[active].swapAt(0, i)
-        let screen = WindowManager.screenFrame()
-        Tiler.tile(windows: workspaces[active], screen: screen)
+        retile()
         workspaces[active][0].focus()
+    }
+
+    func toggleLayout() {
+        layouts[active] = layouts[active] == .tile ? .monocle : .tile
+        retile()
+        if layouts[active] == .monocle, let focused = WindowManager.focusedWindow(),
+           workspaces[active].contains(focused) {
+            focused.raise()
+        }
+        StatusBar.shared.update()
     }
 
     @discardableResult
     func retile() -> CGRect {
         workspaces[active].removeAll { !$0.isTileable() }
         let screen = WindowManager.screenFrame()
-        Tiler.tile(windows: workspaces[active], screen: screen)
+        Tiler.tile(windows: workspaces[active], screen: screen, layout: layouts[active])
         return screen
     }
 

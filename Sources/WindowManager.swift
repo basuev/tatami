@@ -55,6 +55,10 @@ struct TrackedWindow: Equatable {
         }
     }
 
+    func raise() {
+        AXUIElementPerformAction(element, kAXRaiseAction as CFString)
+    }
+
     func isFullscreen() -> Bool {
         var value: AnyObject?
         guard AXUIElementCopyAttributeValue(element, "AXFullScreen" as CFString, &value) == .success else {
