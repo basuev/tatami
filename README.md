@@ -8,7 +8,7 @@ swift, zero dependencies.
 
 - **workspaces** - 9 virtual workspaces via offscreen window hiding
 - **master-stack tiling** - new windows auto-tile in dwm-style layout
-- **menubar indicator** - `[1] 3 5` shows active workspace and occupied ones
+- **menubar indicator** - badge widgets show active workspace and occupied ones
 - **crash safety** - all windows restore on exit
 
 ## keybindings
@@ -17,6 +17,18 @@ swift, zero dependencies.
 |-----|--------|
 | `Option + 1-9` | switch workspace |
 | `Option + Shift + 1-9` | move focused window to workspace |
+
+## configuration
+
+all settings live in `Sources/Config.swift` - edit and rebuild, like dwm's `config.h`.
+
+```swift
+enum Config {
+    static let workspaceCount = 9
+    static let masterRatio: CGFloat = 0.55
+    static let modifier: CGEventFlags = .maskAlternate
+}
+```
 
 ## requirements
 
@@ -57,7 +69,7 @@ make uninstall
 | SIP disabled | no | no | optional | no |
 | auto-tiling | yes | yes | yes | yes |
 | virtual workspaces | yes | yes | yes | yes |
-| config | code | toml | cli | gui + yaml |
+| config | compile-time | toml | cli | gui + yaml |
 | layouts | master-stack | tree (i3) | bsp | 14+ |
 | lines of code | ~500 | ~15k | ~20k | ~15k |
 
