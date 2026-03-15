@@ -90,6 +90,9 @@ final class Hotkeys {
         case 36:
             DispatchQueue.main.async { WorkspaceManager.shared.swapMaster() }
             return nil
+        case 46:
+            DispatchQueue.main.async { WorkspaceManager.shared.toggleLayout() }
+            return nil
         default:
             return Unmanaged.passRetained(event)
         }
