@@ -6,6 +6,7 @@ BUILD_DIR = .build/release
 .PHONY: build install clean
 
 build:
+	@test -f Sources/Config.swift || cp Sources/Config.def.swift Sources/Config.swift
 	swift build -c release
 
 install: build

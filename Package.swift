@@ -8,6 +8,7 @@ let package = Package(
         .executableTarget(
             name: "tatami",
             path: "Sources",
+            exclude: ["Config.def.swift"],
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("ApplicationServices"),

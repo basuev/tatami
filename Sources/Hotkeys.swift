@@ -54,6 +54,18 @@ final class Hotkeys {
             return Unmanaged.passRetained(event)
         }
 
+        for binding in Config.customBindings {
+            guard binding.key == keyCode, binding.shift == hasShift else { continue }
+            let cmd = binding.command
+            DispatchQueue.global(qos: .userInitiated).async {
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/bin/sh")
+                process.arguments = ["-c", cmd]
+                try? process.run()
+            }
+            return nil
+        }
+
         if let number = numberKeys[keyCode] {
             let index = number - 1
             DispatchQueue.main.async {
