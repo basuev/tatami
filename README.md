@@ -9,6 +9,7 @@ swift, zero dependencies.
 - **workspaces** - 9 virtual workspaces via offscreen window hiding
 - **master-stack tiling** - new windows auto-tile in dwm-style layout
 - **menubar indicator** - badge widgets show active workspace and occupied ones
+- **custom keybindings** - bind any key combo to shell commands, compile-time config
 - **crash safety** - all windows restore on exit
 
 ## keybindings
@@ -68,12 +69,24 @@ grant permissions in system settings -> privacy & security when prompted, then r
 ## update
 
 ```bash
+brew upgrade --cask tatami
+```
+
+or from source:
+
+```bash
 make install
 ```
 
 replaces only the binary - permissions persist.
 
 ## uninstall
+
+```bash
+brew uninstall --cask tatami
+```
+
+or:
 
 ```bash
 make uninstall
@@ -93,7 +106,7 @@ make uninstall
 | layouts | master-stack | tree (i3) | bsp | 14+ |
 | lines of code | ~500 | ~15k | ~20k | ~15k |
 
-tatami is not trying to compete with these projects. it exists for those who want the absolute minimum: a single layout, a few keybindings, zero config files, zero dependencies, and code small enough to read in one sitting.
+tatami is not trying to compete with these projects. it exists for those who want the absolute minimum: a single layout, a few keybindings, zero dependencies, and code small enough to read in one sitting.
 
 ## license
 
