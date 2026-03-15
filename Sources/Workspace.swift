@@ -18,12 +18,14 @@ final class WorkspaceManager {
     func switchTo(_ index: Int) {
         guard index >= 0, index < Config.workspaceCount, index != active else { return }
 
-        for win in workspaces[active] {
-            win.hideOffscreen()
-        }
-
+        let screen = WindowManager.screenFrame()
+        let previous = active
         active = index
         retile()
+
+        for win in workspaces[previous] {
+            win.hideInCorner(screen)
+        }
 
         if let master = workspaces[active].first {
             master.focus()
@@ -39,8 +41,9 @@ final class WorkspaceManager {
         guard let i = workspaces[active].firstIndex(of: focused) else { return }
         workspaces[active].remove(at: i)
 
+        let screen = WindowManager.screenFrame()
         workspaces[index].insert(focused, at: 0)
-        focused.hideOffscreen()
+        focused.hideInCorner(screen)
 
         retile()
 
