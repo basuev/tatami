@@ -150,11 +150,28 @@ enum WindowManager {
         guard let screen = NSScreen.main else {
             return CGRect(x: 0, y: 0, width: 1920, height: 1080)
         }
-        let full = screen.frame
-        let visible = screen.visibleFrame
+        return screenFrame(for: screen)
+    }
 
-        let x = visible.origin.x
-        let y = full.height - visible.origin.y - visible.height
-        return CGRect(x: x, y: y, width: visible.width, height: visible.height)
+    static func screenFrame(for screen: NSScreen) -> CGRect {
+        convertRect(screen.visibleFrame)
+    }
+
+    static func screenRect(for screen: NSScreen) -> CGRect {
+        convertRect(screen.frame)
+    }
+
+    private static func convertRect(_ rect: CGRect) -> CGRect {
+        let primaryHeight = NSScreen.screens.first?.frame.maxY ?? 1080
+        return CGRect(
+            x: rect.origin.x,
+            y: primaryHeight - rect.maxY,
+            width: rect.width,
+            height: rect.height
+        )
+    }
+
+    static func displayID(for screen: NSScreen) -> CGDirectDisplayID {
+        screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? 0
     }
 }
