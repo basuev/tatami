@@ -10,7 +10,7 @@ swift, zero dependencies.
 - **master-stack tiling** - new windows auto-tile in dwm-style layout
 - **monocle layout** - per-workspace fullscreen mode, toggle with option+m
 - **menubar indicator** - badge widgets show active workspace and occupied ones
-- **custom keybindings** - bind any key combo to shell commands, compile-time config
+- **custom keybindings** - bind any key combo to shell commands via toml config
 - **multi-monitor** - per-display workspaces, each monitor has its own workspace set
 - **crash safety** - all windows restore on exit
 
@@ -27,28 +27,38 @@ swift, zero dependencies.
 | `Option + ,` / `Option + .` | focus prev/next monitor |
 | `Option + Shift + ,` / `Option + Shift + .` | move window to prev/next monitor |
 
-custom bindings are defined in `Config.swift` - see configuration below.
+all keybindings are configurable - see configuration below.
 
 ## configuration
 
-like dwm's `config.def.h` / `config.h`. defaults live in `Sources/Config.def.swift` (tracked in git). on first build, it is copied to `Sources/Config.swift` (gitignored) - your local config.
+edit `~/.config/tatami/config.toml`. all fields are optional - defaults are used for anything not specified.
 
-edit `Sources/Config.swift` and rebuild:
+```toml
+workspace_count = 9
+master_ratio = 0.55
+modifier = "option"    # "option", "control", or "command"
 
-```swift
-enum Config {
-    static let workspaceCount = 9
-    static let masterRatio: CGFloat = 0.55
-    static let modifier: CGEventFlags = .maskAlternate
+[bindings]
+focus_next = "j"
+focus_prev = "k"
+swap_master = "return"
+toggle_layout = "m"
+focus_monitor_prev = "comma"
+focus_monitor_next = "period"
+move_monitor_prev = "shift+comma"
+move_monitor_next = "shift+period"
+last_workspace = "tab"
 
-    static let customBindings: [Binding] = [
-        Binding(key: Key.return, shift: true, command: "open -n -a Terminal"),
-        Binding(key: Key.b, shift: true, command: "open -n -a Safari"),
-    ]
-}
+[[custom]]
+key = "shift+return"
+command = "open -n -a Terminal"
+
+[[custom]]
+key = "shift+b"
+command = "open -n -a Safari"
 ```
 
-`Key` enum provides named constants for all common key codes (`Key.return`, `Key.space`, `Key.a`-`Key.z`, etc). custom bindings always require `Config.modifier` (alt by default); the `shift` parameter adds shift to the combo.
+custom bindings always include the modifier key (option by default). prefix with `shift+` to add shift to the combo.
 
 ## requirements
 
@@ -108,7 +118,7 @@ make uninstall
 | SIP disabled | no | no | optional | no |
 | auto-tiling | yes | yes | yes | yes |
 | virtual workspaces | yes | yes | yes | yes |
-| config | compile-time | toml | cli | gui + yaml |
+| config | toml | toml | cli | gui + yaml |
 | layouts | master-stack, monocle | tree (i3) | bsp | 14+ |
 | lines of code | ~1k | ~15k | ~20k | ~15k |
 
