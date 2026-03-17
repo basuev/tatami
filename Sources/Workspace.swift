@@ -42,7 +42,7 @@ package final class WorkspaceManager {
 
     func addWindow(_ window: TrackedWindow) {
         for monitor in monitors where monitor.containsWindow(window) { return }
-        monitorForWindow(window).addWindow(window)
+        focusedMonitor.addWindow(window)
         StatusBar.shared.update()
     }
 
