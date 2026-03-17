@@ -207,8 +207,7 @@ package final class Monitor {
 
         for ws in workspaces {
             for win in ws {
-                win.setPosition(center)
-                win.setSize(size)
+                win.setFrame(CGRect(origin: center, size: size))
             }
         }
     }
